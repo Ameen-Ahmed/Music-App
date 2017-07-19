@@ -49,12 +49,11 @@ class MusicApp:
         self.yt_link = StringVar()
         self.sc_link = StringVar()
         self.am_link = StringVar()
-        self.sp_link = StringVar()
 
         self.yt_img = PhotoImage(file='icons/youtube-icon.png').subsample(3, 3)
         self.sc_img = PhotoImage(file='icons/soundcloud-icon.png').subsample(6, 6)
         self.am_img = PhotoImage(file='icons/audiomack-icon.png').subsample(2, 2)
-        self.sp_img = PhotoImage(file='icons/spotify-icon.png').subsample(2, 2)
+
 
         self.yt = ttk.Label(self.output_frame,
                             textvariable=self.yt_link,
@@ -65,9 +64,6 @@ class MusicApp:
         self.am = ttk.Label(self.output_frame,
                             textvariable=self.am_link,
                             compound=LEFT, image=self.am_img).pack()
-        self.sp = ttk.Label(self.output_frame,
-                            textvariable=self.sp_link,
-                            compound=LEFT, image=self.sp_img).pack()
 
     def callback(self, song, artist):
         self.yt_link.set(Web.youtube_search(song, artist))
