@@ -4,6 +4,8 @@
 from tkinter import *
 from tkinter import ttk
 import Web
+import webbrowser
+import lxml
 
 
 class MusicApp:
@@ -21,7 +23,8 @@ class MusicApp:
 
         # Style
         style = ttk.Style(self.master)
-        style.configure('.', background=bkgrnd, font=('Arial Black', 12))
+        style.configure('.', background=bkgrnd, font=('Arial Black', 10))
+        style.configure('Link.TLabel', font=('Arial', 10, 'bold'), fg='blue')
 
         # Frame creation
         self.entry_frame = ttk.Frame(self.master)
@@ -50,26 +53,39 @@ class MusicApp:
         self.sc_link = StringVar()
         self.am_link = StringVar()
 
-        self.yt_img = PhotoImage(file='icons/youtube-icon.png').subsample(3, 3)
-        self.sc_img = PhotoImage(file='icons/soundcloud-icon.png').subsample(6, 6)
-        self.am_img = PhotoImage(file='icons/audiomack-icon.png').subsample(2, 2)
+        self.yt_img = PhotoImage(file='icons/youtube-icon.png').subsample(5, 5)
+        self.sc_img = PhotoImage(file='icons/soundcloud-icon.png').subsample(12, 12)
+        self.am_img = PhotoImage(file='icons/audiomack-icon.png').subsample(3, 3)
 
+        self.yt = ttk.Label(self.output_frame, cursor='hand2',
+                            wraplength=500,
+                            textvariable=self.yt_link, style='Link.TLabel',
+                            compound=LEFT, image=self.yt_img)
+        self.yt.pack(anchor='w', pady=20)
+        self.yt.bind('<Button-1>', lambda e: self.link_callback(e, self.yt_link))
 
-        self.yt = ttk.Label(self.output_frame,
-                            textvariable=self.yt_link,
-                            compound=LEFT, image=self.yt_img).pack()
-        self.sc = ttk.Label(self.output_frame,
-                            textvariable=self.sc_link,
-                            compound=LEFT, image=self.sc_img).pack()
-        self.am = ttk.Label(self.output_frame,
-                            textvariable=self.am_link,
-                            compound=LEFT, image=self.am_img).pack()
+        self.sc = ttk.Label(self.output_frame, cursor='hand2',
+                            wraplength=500,
+                            textvariable=self.sc_link, style='Link.TLabel',
+                            compound=LEFT, image=self.sc_img)
+        self.sc.pack(anchor='w', pady=20)
+        self.sc.bind('<Button-1>', lambda e: self.link_callback(e, self.sc_link))
+
+        self.am = ttk.Label(self.output_frame, cursor='hand2',
+                            wraplength=500,
+                            textvariable=self.am_link, style='Link.TLabel',
+                            compound=LEFT, image=self.am_img)
+        self.am.pack(anchor='w', pady=20)
+        self.am.bind('<Button-1>', lambda e: self.link_callback(e, self.am_link))
 
     def callback(self, song, artist):
         self.yt_link.set(Web.youtube_search(song, artist))
         self.sc_link.set(Web.soundcloud_search(song, artist))
         self.am_link.set(Web.audiomack_search(song, artist))
         self.output_frame.pack()
+
+    def link_callback(self, event, link):
+        webbrowser.open_new(link.get())
 
 def main():
     root = Tk()
