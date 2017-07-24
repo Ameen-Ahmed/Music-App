@@ -23,7 +23,7 @@ class MusicApp:
         # Style
         style = ttk.Style(self.master)
         style.configure('.', background=bkgrnd, font=('Arial Black', 8))
-        style.configure('Link.TLabel', font=('Arial', 8, 'bold'), fg='blue')
+        style.configure('Link.TLabel', font=('Arial', 8, 'bold'), foreground='#0B00AB')
 
         # Frame creation
         self.entry_frame = ttk.Frame(self.master)
@@ -66,12 +66,11 @@ class MusicApp:
                             textvariable=self.yt_link, style='Link.TLabel',
                             compound=LEFT)
         self.yt.grid(row=0, column=1, sticky='w', pady=10)
-        self.yt.bind('<Button-1>', lambda e: self.link_callback(e, self.yt_link))
 
         self.sc = ttk.Label(self.output_frame, cursor='hand2',
                             wraplength=350,
-                            textvariable=self.sc_link, style='Link.TLabel',
-                            compound=LEFT)
+                            textvariable=self.sc_link, compound=LEFT)
+
         self.sc.grid(row=1, column=1, sticky='w', pady=10)
         self.sc.bind('<Button-1>', lambda e: self.link_callback(e, self.sc_link))
 
@@ -84,8 +83,26 @@ class MusicApp:
 
     def callback(self, song, artist):
         self.yt_link.set(Web.youtube_search(song, artist))
+        if self.yt_link.get() != 'None':
+            self.yt.bind('<Button-1>', lambda e: self.link_callback(e, self.yt_link))
+            self.yt.configure(style='Link.TLabel')
+        else:
+            self.yt_link.set('SONG WAS NOT FOUND')
+
         self.sc_link.set(Web.soundcloud_search(song, artist))
+        print(self.sc_link.get(), type(self.sc_link.get()))
+        if self.sc_link.get() != 'None':
+            self.sc.bind('<Button-1>', lambda e: self.link_callback(e, self.sc_link))
+            self.sc.configure(style='Link.TLabel')
+        else:
+            self.sc_link.set('SONG WAS NOT FOUND')
+
         self.am_link.set(Web.audiomack_search(song, artist))
+        if self.am_link.get() != 'None':
+            self.am.bind('<Button-1>', lambda e: self.link_callback(e, self.am_link))
+            self.am.configure(style='Link.TLabel')
+        else:
+            self.am_link.set('SONG WAS NOT FOUND')
         self.output_frame.pack()
 
     def link_callback(self, event, link):
