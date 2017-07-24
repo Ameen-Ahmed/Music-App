@@ -13,20 +13,26 @@ def youtube_search(song, artist):
 
 
 def soundcloud_search(song, artist):
-    format_song = song.replace(' ', '%20').strip()
-    format_artist = artist.replace(' ', '%20').strip()
-    x = song.replace(' ', '-')
-    y = artist.replace(' ', '-')
-    data = request.urlopen('https://soundcloud.com/search?q=' + format_song + '+' + format_artist)
+    reg = '(' + song.strip().replace(' ', '-') + ')'
+    data = request.urlopen('https://soundcloud.com/search?q=' +
+                           song.replace(' ', '%20').strip() +
+                           '+' +
+                           artist.replace(' ', '%20').strip())
     soup = BeautifulSoup(data, 'lxml')
-    for link in soup.findAll('a', attrs={'href': re.compile('(' + x + '|' + y + ')', re.I)}):
+    for link in soup.findAll('a', attrs={'href': re.compile(reg, re.I)}):
         return 'https://www.soundcloud.com' + link['href']
 
 
 def audiomack_search(song, artist):
-    format_song = song.replace(' ', '+').strip()
-    format_artist = artist.replace(' ', '+').strip()
-    data = request.urlopen('https://www.audiomack.com/search?q=' + format_song + '+' + format_artist)
+    reg = '/song/.*?('
+    fullsong = song.strip().split()
+    for word in fullsong:
+        reg = reg + word + '-'
+    reg = reg[:-1] + ')'
+    data = request.urlopen('https://www.audiomack.com/search?q=' +
+                           song.replace(' ', '+').strip() +
+                           '+' +
+                           artist.replace(' ', '+').strip())
     soup = BeautifulSoup(data, 'lxml')
-    for link in soup.findAll('a', attrs={'href': re.compile('/song/.*?' + format_song, re.I)}):
+    for link in soup.findAll('a', attrs={'href': re.compile(reg, re.I)}):
         return 'https://www.audiomack.com' + link['href']

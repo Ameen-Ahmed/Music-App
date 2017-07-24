@@ -5,7 +5,6 @@ from tkinter import *
 from tkinter import ttk
 import Web
 import webbrowser
-import lxml
 
 
 class MusicApp:
