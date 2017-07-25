@@ -3,9 +3,9 @@
 
 from tkinter import *
 from tkinter import ttk
-import Web
 import webbrowser
-
+import Web
+import Link
 
 class MusicApp:
     def __init__(self, master):
@@ -24,6 +24,7 @@ class MusicApp:
         style = ttk.Style(self.master)
         style.configure('.', background=bkgrnd, font=('Arial Black', 8))
         style.configure('Link.TLabel', font=('Arial', 8, 'bold'), foreground='#0B00AB')
+        style.configure('1.TCheckbutton', font=('Arial', 8))
 
         # Frame creation
         self.entry_frame = ttk.Frame(self.master)
@@ -46,6 +47,14 @@ class MusicApp:
         ttk.Button(self.master, text='Search',
                    command=lambda: self.callback(
                        self.song.get(), self.artist.get())).pack(pady=10)
+
+
+        ttk.Checkbutton(self.entry_frame, text='Youtube', onvalue=True, offvalue=False,
+                        style='1.TCheckbutton').grid(row=2, column=0, pady=10)
+        ttk.Checkbutton(self.entry_frame, text='SoundCloud', onvalue=True, offvalue=False,
+                        style='1.TCheckbutton').grid(row=2, column=1, pady=10)
+        ttk.Checkbutton(self.entry_frame, text='Audiomack', onvalue=True, offvalue=False,
+                        style='1.TCheckbutton').grid(row=2, column=2, pady=10)
 
 
         # Output_frame design
@@ -81,11 +90,13 @@ class MusicApp:
         self.am.grid(row=2, column=1, sticky='w', pady=10)
         self.am.bind('<Button-1>', lambda e: self.link_callback(e, self.am_link))
 
-    def callback(self, song, artist):
-        self.yt_link.set(Web.youtube_search(song, artist))
-        if self.yt_link.get() != 'None':
-            self.yt.bind('<Button-1>', lambda e: self.link_callback(e, self.yt_link))
-            self.yt.configure(style='Link.TLabel')
+    def callback(self, song, artist, providers):
+        for thing in providers:
+            x = Link(provider='Youtube', song=song, artist=artist)
+            thing.set(Web.search(x))
+            if thing.get() != 'None':
+                self.yt.bind('<Button-1>', lambda e: self.link_callback(e, self.yt_link))
+                self.yt.configure(style='Link.TLabel')
         else:
             self.yt_link.set('SONG WAS NOT FOUND')
 
