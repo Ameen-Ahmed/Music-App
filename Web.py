@@ -36,3 +36,9 @@ def audiomack_search(song, artist):
     soup = BeautifulSoup(data, 'lxml')
     for link in soup.findAll('a', attrs={'href': re.compile(reg, re.I)}):
         return 'https://www.audiomack.com' + link['href']
+
+def search(link):
+    my_dict = {'Youtube': youtube_search,
+               'SoundCloud': soundcloud_search,
+               'Audiomack': audiomack_search}
+    my_dict[link.provider](link.song, link.artist)
