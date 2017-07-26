@@ -47,21 +47,23 @@ class MusicApp:
                   textvariable=self.artist).grid(row=1, column=2)
 
         # Check buttons
-        self.my_dict={
-            'Youtube': BooleanVar(),
-            'SoundCloud': BooleanVar(),
-            'Audiomack': BooleanVar()}
+        self.youtube = Link.Link(provider='Youtube', status=BooleanVar())
+        self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar())
+        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar())
+        self.my_dict = {'Youtube': self.youtube,
+                        'SoundCloud': self.soundcloud,
+                        'Audiomack': self.audiomack}
 
         ttk.Checkbutton(self.entry_frame, text='Youtube',
-                        variable=self.my_dict['Youtube'], onvalue=True, offvalue=False,
+                        variable=self.youtube.status, onvalue=True, offvalue=False,
                         style='1.TCheckbutton').grid(row=2, column=0, pady=10)
 
         ttk.Checkbutton(self.entry_frame, text='SoundCloud',
-                        variable=self.my_dict['SoundCloud'], onvalue=True, offvalue=False,
+                        variable=self.soundcloud.status, onvalue=True, offvalue=False,
                         style='1.TCheckbutton').grid(row=2, column=1, pady=10)
 
         ttk.Checkbutton(self.entry_frame, text='Audiomack',
-                        variable=self.my_dict['Audiomack'], onvalue=True, offvalue=False,
+                        variable=self.audiomack.status, onvalue=True, offvalue=False,
                         style='1.TCheckbutton').grid(row=2, column=2, pady=10)
 
         ttk.Button(self.master, text='Search',
@@ -69,54 +71,52 @@ class MusicApp:
                        self.song.get(), self.artist.get(), self.my_dict)).pack(pady=10)
 
         # Output_frame design
-        self.yt_link = StringVar()
-        self.sc_link = StringVar()
-        self.am_link = StringVar()
+        self.youtube.link = StringVar()
+        self.soundcloud.link = StringVar()
+        self.audiomack.link = StringVar()
 
 
         #Images
-        self.yt_img = PhotoImage(file='icons/youtube-icon.png').subsample(6, 6)
-        ttk.Label(self.output_frame, image=self.yt_img).grid(row=0, column=0, pady=10)
-        self.sc_img = PhotoImage(file='icons/soundcloud-icon.png').subsample(14, 14)
-        ttk.Label(self.output_frame, image=self.sc_img).grid(row=1, column=0, pady=10)
-        self.am_img = PhotoImage(file='icons/audiomack-icon.png').subsample(3, 3)
-        ttk.Label(self.output_frame, image=self.am_img).grid(row=2, column=0, pady=10)
+        self.youtube.image = PhotoImage(file='icons/youtube-icon.png').subsample(6, 6)
+        ttk.Label(self.output_frame, image=self.youtube.image).grid(row=0, column=0, pady=10)
+        self.soundcloud.image = PhotoImage(file='icons/soundcloud-icon.png').subsample(14, 14)
+        ttk.Label(self.output_frame, image=self.soundcloud.image).grid(row=1, column=0, pady=10)
+        self.audiomack.image = PhotoImage(file='icons/audiomack-icon.png').subsample(3, 3)
+        ttk.Label(self.output_frame, image=self.audiomack.image).grid(row=2, column=0, pady=10)
 
 
         #Output/ Links
-        self.yt = ttk.Label(self.output_frame, cursor='hand2',
-                            wraplength=350, textvariable=self.yt_link,
+        self.youtube.label = ttk.Label(self.output_frame, cursor='hand2',
+                            wraplength=350, textvariable=self.youtube.link,
                             style='Link.TLabel', compound=LEFT)
-        self.yt.grid(row=0, column=1, sticky='w', pady=10)
-        self.yt.bind('<Button-1>', lambda e: self.link_callback(e, self.yt_link))
+        self.youtube.label.grid(row=0, column=1, sticky='w', pady=10)
+        self.youtube.label.bind('<Button-1>', lambda e: self.link_callback(e, self.youtube.link))
 
-        self.sc = ttk.Label(self.output_frame, cursor='hand2',
-                            wraplength=350, textvariable=self.sc_link,
+        self.soundcloud.label = ttk.Label(self.output_frame, cursor='hand2',
+                            wraplength=350, textvariable=self.soundcloud.link,
                             style='Link.TLabel', compound=LEFT)
-        self.sc.grid(row=1, column=1, sticky='w', pady=10)
-        self.sc.bind('<Button-1>', lambda e: self.link_callback(e, self.sc_link))
+        self.soundcloud.label.grid(row=1, column=1, sticky='w', pady=10)
+        self.soundcloud.label.bind('<Button-1>', lambda e: self.link_callback(e, self.soundcloud.link))
 
-        self.am = ttk.Label(self.output_frame, cursor='hand2',
-                            wraplength=350, textvariable=self.am_link,
+        self.audiomack.label = ttk.Label(self.output_frame, cursor='hand2',
+                            wraplength=350, textvariable=self.audiomack.link,
                             style='Link.TLabel', compound=LEFT)
-        self.am.grid(row=2, column=1, sticky='w', pady=10)
-        self.am.bind('<Button-1>', lambda e: self.link_callback(e, self.am_link))
+        self.audiomack.label.grid(row=2, column=1, sticky='w', pady=10)
+        self.audiomack.label.bind('<Button-1>', lambda e: self.link_callback(e, self.audiomack.link))
+
 
     def callback(self, song, artist, providers):
-        other_dict = {
-            'Youtube': self.yt_link,
-            'SoundCloud': self.sc_link,
-            'Audiomack': self.am_link}
-
         for key, value in providers.items():
-            if value.get():
-                other_dict[key].set(Web.search(Link.Link(song, artist, key)))
-                if other_dict[key] is None:
-                    other_dict[key].set('SONG WAS NOT FOUND')
+            if value.status.get():
+                if value.link is None:
+                    value.link.set('SONG WAS NOT FOUND')
+                else:
+                    value.link.set(Web.search(value, song, artist))
         self.output_frame.pack()
 
     def link_callback(self, event, link):
         webbrowser.open_new(link.get())
+
 
 def main():
     root = Tk()
