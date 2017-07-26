@@ -6,3 +6,4 @@ class Link:
         self.link = kwargs.get('link')
         self.label = kwargs.get('label')
         self.status = kwargs.get('status')
+        self.priority = kwargs.get('priority')
