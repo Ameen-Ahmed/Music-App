@@ -47,9 +47,9 @@ class MusicApp:
                   textvariable=self.artist).grid(row=1, column=2)
 
         # Check buttons
-        self.youtube = Link.Link(provider='Youtube', status=BooleanVar(), priority=0)
+        self.youtube = Link.Link(provider='Youtube', status=BooleanVar(), priority=2)
         self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=1)
-        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=2)
+        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=0)
         self.my_dict = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
@@ -71,12 +71,11 @@ class MusicApp:
 
         #Images
         self.youtube.image = PhotoImage(file='icons/youtube-icon.png').subsample(6, 6)
-        ttk.Label(self.output_frame, image=self.youtube.image).grid(row=0, column=0, pady=10)
         self.soundcloud.image = PhotoImage(file='icons/soundcloud-icon.png').subsample(14, 14)
-        ttk.Label(self.output_frame, image=self.soundcloud.image).grid(row=1, column=0, pady=10)
         self.audiomack.image = PhotoImage(file='icons/audiomack-icon.png').subsample(3, 3)
-        ttk.Label(self.output_frame, image=self.audiomack.image).grid(row=2, column=0, pady=10)
 
+        for key, value in self.my_dict.items():
+            ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
 
         #Output/ Links
         self.youtube.label = ttk.Label(self.output_frame, cursor='hand2',
