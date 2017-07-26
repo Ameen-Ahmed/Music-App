@@ -41,4 +41,4 @@ def search(link):
     my_dict = {'Youtube': youtube_search,
                'SoundCloud': soundcloud_search,
                'Audiomack': audiomack_search}
-    my_dict[link.provider](link.song, link.artist)
+    return my_dict[link.provider](link.song, link.artist)
