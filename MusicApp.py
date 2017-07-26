@@ -47,24 +47,17 @@ class MusicApp:
                   textvariable=self.artist).grid(row=1, column=2)
 
         # Check buttons
-        self.youtube = Link.Link(provider='Youtube', status=BooleanVar())
-        self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar())
-        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar())
+        self.youtube = Link.Link(provider='Youtube', status=BooleanVar(), priority=0)
+        self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=1)
+        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=2)
         self.my_dict = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
 
-        ttk.Checkbutton(self.entry_frame, text='Youtube',
-                        variable=self.youtube.status, onvalue=True, offvalue=False,
-                        style='1.TCheckbutton').grid(row=2, column=0, pady=10)
-
-        ttk.Checkbutton(self.entry_frame, text='SoundCloud',
-                        variable=self.soundcloud.status, onvalue=True, offvalue=False,
-                        style='1.TCheckbutton').grid(row=2, column=1, pady=10)
-
-        ttk.Checkbutton(self.entry_frame, text='Audiomack',
-                        variable=self.audiomack.status, onvalue=True, offvalue=False,
-                        style='1.TCheckbutton').grid(row=2, column=2, pady=10)
+        for key, value in self.my_dict.items():
+            ttk.Checkbutton(self.entry_frame, text=key,
+                        variable=value.status, onvalue=True, offvalue=False,
+                        style='1.TCheckbutton').grid(row=2, column=value.priority, pady=10)
 
         ttk.Button(self.master, text='Search',
                    command=lambda: self.callback(
