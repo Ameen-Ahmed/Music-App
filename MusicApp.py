@@ -31,6 +31,7 @@ class MusicApp:
         self.entry_frame.pack()
         self.output_frame = ttk.Frame(self.master)
 
+        # Song & Artist variables
         self.song = StringVar()
         self.artist = StringVar()
 
@@ -59,37 +60,33 @@ class MusicApp:
                         variable=value.status, onvalue=True, offvalue=False,
                         style='1.TCheckbutton').grid(row=2, column=value.priority, pady=10)
 
+        # Search Button
         ttk.Button(self.master, text='Search',
                    command=lambda: self.callback(
                        self.song.get(), self.artist.get(), self.my_dict)).pack(pady=10)
 
-        #Images
+        # Images
         self.youtube.image = PhotoImage(file='icons/youtube-icon.png').subsample(6, 6)
         self.soundcloud.image = PhotoImage(file='icons/soundcloud-icon.png').subsample(14, 14)
         self.audiomack.image = PhotoImage(file='icons/audiomack-icon.png').subsample(3, 3)
 
-        for key, value in self.my_dict.items():
-            ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
-
-        #Output/ Links
-        for key, value in self.my_dict.items():
-            value.label = ttk.Label(self.output_frame, cursor='hand2',
-                                           wraplength=350, textvariable=value.link,
-                                           style='Link.TLabel', compound=LEFT)
-            value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
-            value.label.bind('<Button-1>', lambda e: self.link_callback(e, value.link))
-
-
     def callback(self, song, artist, providers):
         for key, value in providers.items():
             if value.status.get():
+                ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
+                value.label = ttk.Label(self.output_frame, cursor='hand2',
+                                        wraplength=350, textvariable=value.link,
+                                        style='Link.TLabel', compound=LEFT)
+                value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
                 if value.link is None:
                     value.link.set('SONG WAS NOT FOUND')
                 else:
                     value.link.set(Web.search(value, song, artist))
+                    eval_link = lambda x: (lambda p: self.link_callback(x))
+                    value.label.bind('<Button-1>', eval_link(value.link))
         self.output_frame.pack()
 
-    def link_callback(self, event, link):
+    def link_callback(self, link):
         webbrowser.open_new(link.get())
 
 
