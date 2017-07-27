@@ -1,9 +1,12 @@
+from tkinter import *
+from tkinter import ttk
+
 
 class Link:
     def __init__(self, **kwargs):
         self.provider = kwargs['provider']
         self.image = kwargs.get('image')
-        self.link = kwargs.get('link')
+        self.link = StringVar()
         self.label = kwargs.get('label')
-        self.status = kwargs.get('status')
+        self.status = BooleanVar()
         self.priority = kwargs.get('priority')
