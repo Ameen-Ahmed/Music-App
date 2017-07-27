@@ -47,9 +47,9 @@ class MusicApp:
                   textvariable=self.artist).grid(row=1, column=2)
 
         # Check buttons
-        self.youtube = Link.Link(provider='Youtube', status=BooleanVar(), priority=2)
-        self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=1)
-        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=0)
+        self.youtube = Link.Link(provider='Youtube', priority=0)
+        self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=2)
+        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=1)
         self.my_dict = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
@@ -63,12 +63,6 @@ class MusicApp:
                    command=lambda: self.callback(
                        self.song.get(), self.artist.get(), self.my_dict)).pack(pady=10)
 
-        # Output_frame design
-        self.youtube.link = StringVar()
-        self.soundcloud.link = StringVar()
-        self.audiomack.link = StringVar()
-
-
         #Images
         self.youtube.image = PhotoImage(file='icons/youtube-icon.png').subsample(6, 6)
         self.soundcloud.image = PhotoImage(file='icons/soundcloud-icon.png').subsample(14, 14)
@@ -78,23 +72,12 @@ class MusicApp:
             ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
 
         #Output/ Links
-        self.youtube.label = ttk.Label(self.output_frame, cursor='hand2',
-                            wraplength=350, textvariable=self.youtube.link,
-                            style='Link.TLabel', compound=LEFT)
-        self.youtube.label.grid(row=0, column=1, sticky='w', pady=10)
-        self.youtube.label.bind('<Button-1>', lambda e: self.link_callback(e, self.youtube.link))
-
-        self.soundcloud.label = ttk.Label(self.output_frame, cursor='hand2',
-                            wraplength=350, textvariable=self.soundcloud.link,
-                            style='Link.TLabel', compound=LEFT)
-        self.soundcloud.label.grid(row=1, column=1, sticky='w', pady=10)
-        self.soundcloud.label.bind('<Button-1>', lambda e: self.link_callback(e, self.soundcloud.link))
-
-        self.audiomack.label = ttk.Label(self.output_frame, cursor='hand2',
-                            wraplength=350, textvariable=self.audiomack.link,
-                            style='Link.TLabel', compound=LEFT)
-        self.audiomack.label.grid(row=2, column=1, sticky='w', pady=10)
-        self.audiomack.label.bind('<Button-1>', lambda e: self.link_callback(e, self.audiomack.link))
+        for key, value in self.my_dict.items():
+            value.label = ttk.Label(self.output_frame, cursor='hand2',
+                                           wraplength=350, textvariable=value.link,
+                                           style='Link.TLabel', compound=LEFT)
+            value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
+            value.label.bind('<Button-1>', lambda e: self.link_callback(e, value.link))
 
 
     def callback(self, song, artist, providers):
