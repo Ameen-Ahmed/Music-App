@@ -6,6 +6,7 @@ from tkinter import ttk
 import webbrowser
 import Web
 import Link
+import os
 
 
 class MusicApp:
@@ -66,9 +67,9 @@ class MusicApp:
                        self.song.get(), self.artist.get(), self.my_dict)).pack(pady=10)
 
         # Images
-        self.youtube.image = PhotoImage(file='icons/youtube-icon.png').subsample(6, 6)
-        self.soundcloud.image = PhotoImage(file='icons/soundcloud-icon.png').subsample(14, 14)
-        self.audiomack.image = PhotoImage(file='icons/audiomack-icon.png').subsample(3, 3)
+        self.youtube.image = PhotoImage(file=self.resource_path("icons\youtube-icon.png")).subsample(6, 6)
+        self.soundcloud.image = PhotoImage(file=self.resource_path("icons\soundcloud-icon.png")).subsample(14, 14)
+        self.audiomack.image = PhotoImage(file=self.resource_path("icons\\audiomack-icon.png")).subsample(3, 3)
 
     def callback(self, song, artist, providers):
         for key, value in providers.items():
@@ -89,7 +90,10 @@ class MusicApp:
     def link_callback(self, link):
         webbrowser.open_new(link.get())
 
-
+    def resource_path(self, relative_path):
+        if hasattr(sys, '_MEIPASS'):
+            return os.path.join(sys._MEIPASS, relative_path)
+        return os.path.join(relative_path)
 def main():
     root = Tk()
     MusicApp(root)
