@@ -1,6 +1,6 @@
 import sqlite3
 
-class Cache_db:
+class Cache:
     def __init__(self, providers, **kwargs):
         self.filename = kwargs.get('filename', 'cache')
         self.table = kwargs.get('table', 'recent')
@@ -19,13 +19,15 @@ class Cache_db:
     def disp_rows(self):
         cursor = self.db.execute('SELECT * FROM {} ORDER BY Time'.format(self.table))
         return cursor
-def main():
-    my_dict = {'Youtube': 1,
-               'SoundCloud': 2,
-               'Audiomack': 3}
-    x = Cache_db(my_dict)
-    x.insert(('Loud Pack', 'Tory Lanez', None, None, None, 'NOW'))
-    for row in x.disp_rows():
-        print(row)
-if __name__ == '__main__':
-    main()
+
+    def check_data(self, song, artist):
+        cursor = self.db.execute('SELECT (Song, Artist) FROM {}'.format(self.table))
+        for row in cursor:
+            if song == row['Song'] and artist == row['Artist']:
+                return True
+        return False
+
+# def main():
+#     pass
+# if __name__ == '__main__':
+#     main()
