@@ -21,7 +21,8 @@ class Cache:
 
     def disp_rows(self):
         cursor = self.db.execute('SELECT * FROM {} ORDER BY Time'.format(self.table))
-        return cursor
+        for row in cursor.fetchall():
+            print(tuple(row))
 
     def update(self, song, artist):
         pass
