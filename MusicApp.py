@@ -98,6 +98,9 @@ class MusicApp:
                         value.link.set(web_link)
                         eval_link = lambda x: (lambda p: self.link_callback(x))
                         value.label.bind('<Button-1>', eval_link(value.link))
+        database_entry.append(datetime.strftime(datetime.now(), '%H:%M:%S'))
+        self.database.insert(database_entry)
+        self.database.disp_rows()
         self.output_frame.pack()
 
     def link_callback(self, link):
