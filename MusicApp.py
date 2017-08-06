@@ -76,6 +76,7 @@ class MusicApp:
         self.audiomack.image = PhotoImage(file=self.resource_path("icons\\audiomack-icon.png")).subsample(3, 3)
 
     def callback(self, song, artist, providers):
+        new = True
         database_entry = [song, artist]
         for key, value in providers.items():
             if value.status.get():
@@ -84,7 +85,9 @@ class MusicApp:
                                         textvariable=value.link, style='Link.TLabel')
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
                 if self.database.check_data(song, artist):
-                    web_link = self.database.retrieve(song, artist)
+                    new = False
+                    web_link = self.database.retrieve(song, artist)[key]
+                    self.database.update(song, artist)
                     value.link.set(web_link)
                     eval_link = lambda x: (lambda p: self.link_callback(x))
                     value.label.bind('<Button-1>', eval_link(value.link))
@@ -98,8 +101,10 @@ class MusicApp:
                         value.link.set(web_link)
                         eval_link = lambda x: (lambda p: self.link_callback(x))
                         value.label.bind('<Button-1>', eval_link(value.link))
-        database_entry.append(datetime.strftime(datetime.now(), '%H:%M:%S'))
-        self.database.insert(database_entry)
+            else:
+                database_entry.append("NO ENTRY")
+        if new:
+            self.database.insert(database_entry)
         self.database.disp_rows()
         self.output_frame.pack()
 
