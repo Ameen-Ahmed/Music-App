@@ -15,6 +15,7 @@ class Cache:
         self.db.execute(create_str.format(self.table))
 
     def insert(self, row):
+        row.append(datetime.strftime(datetime.now(), '%H:%M:%S'))
         self.db.execute('INSERT INTO {} VALUES(?, ?, ?, ?, ?, ?)'.format(self.table), row)
 
     def retrieve(self, song, artist):
