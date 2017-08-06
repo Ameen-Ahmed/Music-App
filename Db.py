@@ -28,7 +28,8 @@ class Cache:
             print(tuple(row))
 
     def update(self, song, artist):
-        pass
+        self.db.execute('UPDATE {} SET Time = ? WHERE Song = ? AND Artist = ?'.format(
+                self.table), (datetime.strftime(datetime.now(), '%H:%M:%S'), song, artist))
 
     def check_data(self, song, artist):
         cursor = self.db.execute('SELECT Song, Artist FROM {}'.format(self.table))
