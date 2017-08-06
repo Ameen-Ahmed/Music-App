@@ -1,4 +1,6 @@
 import sqlite3
+import Web
+from datetime import datetime
 
 class Cache:
     def __init__(self, providers, **kwargs):
@@ -16,8 +18,8 @@ class Cache:
         self.db.execute('INSERT INTO {} VALUES(?, ?, ?, ?, ?, ?)'.format(self.table), row)
 
     def retrieve(self, song, artist):
-        cursor = self.db.execute('SELECT * FROM {} WHERE Song = ? AND Artist = ?'.format(self.table))
-        dict(cursor.fetchone())
+        cursor = self.db.execute('SELECT * FROM {} WHERE Song = ? AND Artist = ?'.format(self.table), (song, artist))
+        return cursor.fetchone()
 
     def disp_rows(self):
         cursor = self.db.execute('SELECT * FROM {} ORDER BY Time'.format(self.table))
@@ -33,8 +35,3 @@ class Cache:
             if song == row['Song'] and artist == row['Artist']:
                 return True
         return False
-
-# def main():
-#     pass
-# if __name__ == '__main__':
-#     main()
