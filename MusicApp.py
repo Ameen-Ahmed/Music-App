@@ -8,7 +8,7 @@ import Web
 import Link
 import Db
 import os
-from datetime import datetime
+import string
 
 class MusicApp:
     def __init__(self, master):
@@ -68,7 +68,7 @@ class MusicApp:
         # Search Button
         ttk.Button(self.master, text='Search',
                    command=lambda: self.callback(
-                       self.song.get(), self.artist.get(), self.my_dict)).pack(pady=10)
+                       string.capwords(self.song.get()), string.capwords(self.artist.get()), self.my_dict)).pack(pady=10)
 
         # Images
         self.youtube.image = PhotoImage(file=self.resource_path("icons\youtube-icon.png")).subsample(6, 6)
