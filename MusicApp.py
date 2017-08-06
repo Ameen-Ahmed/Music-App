@@ -14,7 +14,7 @@ class MusicApp:
     def __init__(self, master):
         self.master = master
         self.createGUI()
-
+        self.master.protocol("WM_DELETE_WINDOW", self.safe_close)
 
     def createGUI(self):
         # Configure master window
@@ -110,6 +110,13 @@ class MusicApp:
         if hasattr(sys, '_MEIPASS'):
             return os.path.join(sys._MEIPASS, relative_path)
         return os.path.join(relative_path)
+
+    def safe_close(self):
+        self.database.db.close()
+        os.remove(self.database.filename)
+        self.master.destroy()
+
+
 def main():
     root = Tk()
     MusicApp(root)
