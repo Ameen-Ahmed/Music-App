@@ -1,18 +1,20 @@
 # Ameen Ahmed
-# 7/13/17
+# Started 7/13/17
 
 from tkinter import *
 from tkinter import ttk
 import webbrowser
 import Web
 import Link
+import Db
 import os
-
+from datetime import datetime
 
 class MusicApp:
     def __init__(self, master):
         self.master = master
         self.createGUI()
+
 
     def createGUI(self):
         # Configure master window
@@ -48,14 +50,16 @@ class MusicApp:
         ttk.Entry(self.entry_frame, width=20,
                   textvariable=self.artist).grid(row=1, column=2)
 
-        # Check buttons
+        # Check buttons & Database creation
         self.youtube = Link.Link(provider='Youtube', priority=0)
         self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=2)
         self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=1)
+
         self.my_dict = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
 
+        self.database = Db.Cache(self.my_dict)
         for key, value in self.my_dict.items():
             ttk.Checkbutton(self.entry_frame, text=key,
                         variable=value.status, onvalue=True, offvalue=False,
@@ -72,19 +76,28 @@ class MusicApp:
         self.audiomack.image = PhotoImage(file=self.resource_path("icons\\audiomack-icon.png")).subsample(3, 3)
 
     def callback(self, song, artist, providers):
+        database_entry = [song, artist]
         for key, value in providers.items():
             if value.status.get():
                 ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
-                value.label = ttk.Label(self.output_frame, cursor='hand2',
-                                        wraplength=350, textvariable=value.link,
-                                        style='Link.TLabel', compound=LEFT)
+                value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
+                                        textvariable=value.link, style='Link.TLabel')
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
-                if value.link is None:
-                    value.link.set('SONG WAS NOT FOUND')
-                else:
-                    value.link.set(Web.search(value, song, artist))
+                if self.database.check_data(song, artist):
+                    web_link = self.database.retrieve(song, artist)
+                    value.link.set(web_link)
                     eval_link = lambda x: (lambda p: self.link_callback(x))
                     value.label.bind('<Button-1>', eval_link(value.link))
+                else:
+                    web_link = Web.search(value, song, artist)
+                    if web_link is None:
+                        value.link.set('SONG WAS NOT FOUND')
+                        database_entry.append('SONG WAS NOT FOUND')
+                    else:
+                        database_entry.append(web_link)
+                        value.link.set(web_link)
+                        eval_link = lambda x: (lambda p: self.link_callback(x))
+                        value.label.bind('<Button-1>', eval_link(value.link))
         self.output_frame.pack()
 
     def link_callback(self, link):
