@@ -86,13 +86,14 @@ class MusicApp:
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
                 if self.database.check_data(song, artist):
                     new = False
+                    self.database.update(song, artist, key)
                     web_link = self.database.retrieve(song, artist)[key]
-                    self.database.update(song, artist)
                     value.link.set(web_link)
-                    eval_link = lambda x: (lambda p: self.link_callback(x))
-                    value.label.bind('<Button-1>', eval_link(value.link))
+                    if web_link is not None:
+                        eval_link = lambda x: (lambda p: self.link_callback(x))
+                        value.label.bind('<Button-1>', eval_link(value.link))
                 else:
-                    web_link = Web.search(value, song, artist)
+                    web_link = Web.search_link(value, song, artist)
                     if web_link is None:
                         value.link.set('SONG WAS NOT FOUND')
                         database_entry.append('SONG WAS NOT FOUND')
