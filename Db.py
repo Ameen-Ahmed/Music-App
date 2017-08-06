@@ -27,9 +27,17 @@ class Cache:
         for row in cursor.fetchall():
             print(tuple(row))
 
-    def update(self, song, artist):
+    def update_time(self, song, artist):
         self.db.execute('UPDATE {} SET Time = ? WHERE Song = ? AND Artist = ?'.format(
                 self.table), (datetime.strftime(datetime.now(), '%H:%M:%S'), song, artist))
+
+    def update(self, song, artist, key):
+        self.update_time(song, artist)
+        if self.db.execute('SELECT Song, Artist FROM {} WHERE ? = \'NO ENTRY\''.format(self.table), (key,)):
+            web_link = Web.search_key(key, song, artist)
+            if web_link is None: web_link = 'SONG NOT FOUND'
+            self.db.execute('UPDATE {} SET {} = ? WHERE Song = ? AND Artist = ?'.format(self.table, key),
+                            (web_link, song, artist))
 
     def check_data(self, song, artist):
         cursor = self.db.execute('SELECT Song, Artist FROM {}'.format(self.table))
