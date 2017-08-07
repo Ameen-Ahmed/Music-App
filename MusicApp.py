@@ -116,7 +116,6 @@ class MusicApp:
 
     def safe_close(self):
         self.database.db.close()
-        os.remove(self.database.filename)
         self.master.destroy()
 
 
