@@ -55,12 +55,12 @@ class MusicApp:
         self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=2)
         self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=1)
 
-        self.my_dict = {'Youtube': self.youtube,
+        self.providers = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
 
-        self.database = Db.Cache(self.my_dict)
-        for key, value in self.my_dict.items():
+        self.database = Db.Cache(self.providers)
+        for key, value in self.providers.items():
             ttk.Checkbutton(self.entry_frame, text=key,
                         variable=value.status, onvalue=True, offvalue=False,
                         style='1.TCheckbutton').grid(row=2, column=value.priority, pady=10)
@@ -68,7 +68,7 @@ class MusicApp:
         # Search Button
         ttk.Button(self.master, text='Search',
                    command=lambda: self.callback(
-                       string.capwords(self.song.get()), string.capwords(self.artist.get()), self.my_dict)).pack(pady=10)
+                       string.capwords(self.song.get()), string.capwords(self.artist.get()), self.providers)).pack(pady=10)
 
         # Images
         self.youtube.image = PhotoImage(file=self.resource_path("icons\youtube-icon.png")).subsample(6, 6)
@@ -78,12 +78,9 @@ class MusicApp:
     def callback(self, song, artist, providers):
         previous_search = self.database.check_data(song, artist)
         database_entry = [song, artist]
+
         for key, value in providers.items():
             if value.status.get():
-                ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
-                value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
-                                        textvariable=value.link, style='Link.TLabel')
-                value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
                 if previous_search:
                     self.database.update(song, artist, key)
                     web_link = self.database.retrieve(song, artist)[key]
@@ -91,14 +88,21 @@ class MusicApp:
                     web_link = Web.search_link(value, song, artist)
                     database_entry.append(web_link)
 
+                ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
+                value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
+                                        textvariable=value.link, style='Link.TLabel')
+                value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
                 value.link.set(web_link)
+
                 if web_link != 'SONG NOT FOUND':
                     eval_link = lambda x: (lambda p: self.link_callback(x))
                     value.label.bind('<Button-1>', eval_link(value.link))
             else:
                 database_entry.append("NO ENTRY")
+
         if not previous_search:
             self.database.insert(database_entry)
+
         self.database.disp_rows()
         self.output_frame.pack()
 
