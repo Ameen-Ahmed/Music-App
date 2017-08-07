@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Cache:
     def __init__(self, providers, **kwargs):
-        self.filename = kwargs.get('filename', 'cache')
+        self.filename = kwargs.get('filename', 'cache.db')
         self.table = kwargs.get('table', 'recent')
         self.db = sqlite3.connect(self.filename)
         self.db.row_factory = sqlite3.Row
