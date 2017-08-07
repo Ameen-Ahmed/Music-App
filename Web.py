@@ -37,8 +37,17 @@ def audiomack_search(song, artist):
     for link in soup.findAll('a', attrs={'href': re.compile(reg, re.I)}):
         return 'https://www.audiomack.com' + link['href']
 
-def search(link, song, artist):
+
+def search_key(key, song, artist):
     my_dict = {'Youtube': youtube_search,
                'SoundCloud': soundcloud_search,
                'Audiomack': audiomack_search}
-    return my_dict[link.provider](song, artist)
+    web_link = my_dict[key](song, artist)
+    return web_link if web_link is not None else 'SONG NOT FOUND'
+
+def search_link(link, song, artist):
+    my_dict = {'Youtube': youtube_search,
+               'SoundCloud': soundcloud_search,
+               'Audiomack': audiomack_search}
+    web_link = my_dict[link.provider](song, artist)
+    return web_link if web_link is not None else 'SONG NOT FOUND'

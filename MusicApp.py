@@ -1,18 +1,20 @@
 # Ameen Ahmed
-# 7/13/17
+# Started 7/13/17
 
 from tkinter import *
 from tkinter import ttk
 import webbrowser
 import Web
 import Link
+import Db
 import os
-
+import string
 
 class MusicApp:
     def __init__(self, master):
         self.master = master
         self.createGUI()
+        self.master.protocol("WM_DELETE_WINDOW", self.safe_close)
 
     def createGUI(self):
         # Configure master window
@@ -48,14 +50,16 @@ class MusicApp:
         ttk.Entry(self.entry_frame, width=20,
                   textvariable=self.artist).grid(row=1, column=2)
 
-        # Check buttons
+        # Check buttons & Database creation
         self.youtube = Link.Link(provider='Youtube', priority=0)
         self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=2)
         self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=1)
+
         self.my_dict = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
 
+        self.database = Db.Cache(self.my_dict)
         for key, value in self.my_dict.items():
             ttk.Checkbutton(self.entry_frame, text=key,
                         variable=value.status, onvalue=True, offvalue=False,
@@ -64,7 +68,7 @@ class MusicApp:
         # Search Button
         ttk.Button(self.master, text='Search',
                    command=lambda: self.callback(
-                       self.song.get(), self.artist.get(), self.my_dict)).pack(pady=10)
+                       string.capwords(self.song.get()), string.capwords(self.artist.get()), self.my_dict)).pack(pady=10)
 
         # Images
         self.youtube.image = PhotoImage(file=self.resource_path("icons\youtube-icon.png")).subsample(6, 6)
@@ -72,19 +76,30 @@ class MusicApp:
         self.audiomack.image = PhotoImage(file=self.resource_path("icons\\audiomack-icon.png")).subsample(3, 3)
 
     def callback(self, song, artist, providers):
+        previous_search = self.database.check_data(song, artist)
+        database_entry = [song, artist]
         for key, value in providers.items():
             if value.status.get():
                 ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
-                value.label = ttk.Label(self.output_frame, cursor='hand2',
-                                        wraplength=350, textvariable=value.link,
-                                        style='Link.TLabel', compound=LEFT)
+                value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
+                                        textvariable=value.link, style='Link.TLabel')
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
-                if value.link is None:
-                    value.link.set('SONG WAS NOT FOUND')
+                if previous_search:
+                    self.database.update(song, artist, key)
+                    web_link = self.database.retrieve(song, artist)[key]
                 else:
-                    value.link.set(Web.search(value, song, artist))
+                    web_link = Web.search_link(value, song, artist)
+                    database_entry.append(web_link)
+
+                value.link.set(web_link)
+                if web_link != 'SONG NOT FOUND':
                     eval_link = lambda x: (lambda p: self.link_callback(x))
                     value.label.bind('<Button-1>', eval_link(value.link))
+            else:
+                database_entry.append("NO ENTRY")
+        if not previous_search:
+            self.database.insert(database_entry)
+        self.database.disp_rows()
         self.output_frame.pack()
 
     def link_callback(self, link):
@@ -94,6 +109,13 @@ class MusicApp:
         if hasattr(sys, '_MEIPASS'):
             return os.path.join(sys._MEIPASS, relative_path)
         return os.path.join(relative_path)
+
+    def safe_close(self):
+        self.database.db.close()
+        os.remove(self.database.filename)
+        self.master.destroy()
+
+
 def main():
     root = Tk()
     MusicApp(root)
