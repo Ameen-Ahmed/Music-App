@@ -76,7 +76,7 @@ class MusicApp:
         self.audiomack.image = PhotoImage(file=self.resource_path("icons\\audiomack-icon.png")).subsample(3, 3)
 
     def callback(self, song, artist, providers):
-        new = True
+        previous_search = self.database.check_data(song, artist)
         database_entry = [song, artist]
         for key, value in providers.items():
             if value.status.get():
@@ -84,23 +84,20 @@ class MusicApp:
                 value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
                                         textvariable=value.link, style='Link.TLabel')
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
-
-                if self.database.check_data(song, artist):
-                    new = False
+                if previous_search:
                     self.database.update(song, artist, key)
                     web_link = self.database.retrieve(song, artist)[key]
-                    value.link.set(web_link)
-                    if web_link != 'SONG NOT FOUND':
-                        eval_link = lambda x: (lambda p: self.link_callback(x))
-                        value.label.bind('<Button-1>', eval_link(value.link))
                 else:
                     web_link = Web.search_link(value, song, artist)
-                    if web_link != 'SONG NOT FOUND':
-                        eval_link = lambda x: (lambda p: self.link_callback(x))
-                        value.label.bind('<Button-1>', eval_link(value.link))
+                    database_entry.append(web_link)
+
+                value.link.set(web_link)
+                if web_link != 'SONG NOT FOUND':
+                    eval_link = lambda x: (lambda p: self.link_callback(x))
+                    value.label.bind('<Button-1>', eval_link(value.link))
             else:
                 database_entry.append("NO ENTRY")
-        if new:
+        if not previous_search:
             self.database.insert(database_entry)
         self.database.disp_rows()
         self.output_frame.pack()
