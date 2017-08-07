@@ -84,22 +84,18 @@ class MusicApp:
                 value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
                                         textvariable=value.link, style='Link.TLabel')
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
+
                 if self.database.check_data(song, artist):
                     new = False
                     self.database.update(song, artist, key)
                     web_link = self.database.retrieve(song, artist)[key]
                     value.link.set(web_link)
-                    if web_link is not None:
+                    if web_link != 'SONG NOT FOUND':
                         eval_link = lambda x: (lambda p: self.link_callback(x))
                         value.label.bind('<Button-1>', eval_link(value.link))
                 else:
                     web_link = Web.search_link(value, song, artist)
-                    if web_link is None:
-                        value.link.set('SONG WAS NOT FOUND')
-                        database_entry.append('SONG WAS NOT FOUND')
-                    else:
-                        database_entry.append(web_link)
-                        value.link.set(web_link)
+                    if web_link != 'SONG NOT FOUND':
                         eval_link = lambda x: (lambda p: self.link_callback(x))
                         value.label.bind('<Button-1>', eval_link(value.link))
             else:

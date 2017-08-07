@@ -35,7 +35,6 @@ class Cache:
         self.update_time(song, artist)
         if self.db.execute('SELECT Song, Artist FROM {} WHERE ? = \'NO ENTRY\''.format(self.table), (key,)):
             web_link = Web.search_key(key, song, artist)
-            if web_link is None: web_link = 'SONG NOT FOUND'
             self.db.execute('UPDATE {} SET {} = ? WHERE Song = ? AND Artist = ?'.format(self.table, key),
                             (web_link, song, artist))
 
