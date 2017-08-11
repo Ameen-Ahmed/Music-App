@@ -5,7 +5,7 @@ import sqlite3
 import Web
 from datetime import datetime
 
-class Cache:
+class Database:
     def __init__(self, providers, **kwargs):
         self.filename = kwargs.get('filename', 'cache.db')
         self.table = kwargs.get('table', 'recent')

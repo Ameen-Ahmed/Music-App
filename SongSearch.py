@@ -5,13 +5,13 @@ from tkinter import *
 from tkinter import ttk
 import webbrowser
 import Web
-import Link
-import Db
+import MusicObj
+import Database
 import os
 import string
 
 
-class MusicApp:
+class SongSearch:
     def __init__(self, master):
         self.master = master
         self.createGUI()
@@ -21,13 +21,13 @@ class MusicApp:
         # Configure master window
         bkgrnd = '#AE2D58'
         self.master.configure(background=bkgrnd)
-        self.master.title('MusicApp.py')
+        self.master.title('SongSearch.py')
         self.master.resizable(False, False)
 
         # Style
         style = ttk.Style(self.master)
         style.configure('.', background=bkgrnd, font=('Arial Black', 8))
-        style.configure('Link.TLabel', font=('Arial', 8, 'bold'), foreground='#0B00AB')
+        style.configure('MusicObj.TLabel', font=('Arial', 8, 'bold'), foreground='#0B00AB')
         style.configure('1.TCheckbutton', font=('Arial', 8))
 
         # Frame creation
@@ -52,15 +52,15 @@ class MusicApp:
                   textvariable=self.artist).grid(row=1, column=2)
 
         # Check buttons & Database creation
-        self.youtube = Link.Link(provider='Youtube', priority=0)
-        self.soundcloud = Link.Link(provider='SoundCloud', status=BooleanVar(), priority=2)
-        self.audiomack = Link.Link(provider='Audiomack', status=BooleanVar(), priority=1)
+        self.youtube = MusicObj.MusicObj(provider='Youtube', priority=0)
+        self.soundcloud = MusicObj.MusicObj(provider='SoundCloud', status=BooleanVar(), priority=2)
+        self.audiomack = MusicObj.MusicObj(provider='Audiomack', status=BooleanVar(), priority=1)
 
         self.providers = {'Youtube': self.youtube,
                         'SoundCloud': self.soundcloud,
                         'Audiomack': self.audiomack}
 
-        self.database = Db.Cache(self.providers)
+        self.database = Database.Database(self.providers)
         for key, value in self.providers.items():
             ttk.Checkbutton(self.entry_frame, text=key,
                         variable=value.status, onvalue=True, offvalue=False,
@@ -91,7 +91,7 @@ class MusicApp:
 
                 ttk.Label(self.output_frame, image=value.image).grid(row=value.priority, column=0, pady=10)
                 value.label = ttk.Label(self.output_frame, cursor='hand2', wraplength=350,
-                                        textvariable=value.link, style='Link.TLabel')
+                                        textvariable=value.link, style='MusicObj.TLabel')
                 value.label.grid(row=value.priority, column=1, sticky='w', pady=10)
                 value.link.set(web_link)
 
@@ -122,7 +122,7 @@ class MusicApp:
 
 def main():
     root = Tk()
-    MusicApp(root)
+    SongSearch(root)
     root.mainloop()
 
 if __name__ == '__main__': main()

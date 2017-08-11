@@ -4,7 +4,7 @@
 from tkinter import *
 
 
-class Link:
+class MusicObj:
     def __init__(self, **kwargs):
         self.provider = kwargs['provider']
         self.image = kwargs.get('image')
