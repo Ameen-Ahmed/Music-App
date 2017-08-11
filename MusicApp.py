@@ -10,7 +10,8 @@ import Db
 import os
 import string
 
-class MusicApp:
+
+class MusicApp():
     def __init__(self, master):
         self.master = master
         self.createGUI()
@@ -103,7 +104,6 @@ class MusicApp:
         if not previous_search:
             self.database.insert(database_entry)
 
-        self.database.disp_rows()
         self.output_frame.pack()
 
     def link_callback(self, link):
@@ -116,6 +116,7 @@ class MusicApp:
 
     def safe_close(self):
         self.database.db.close()
+
         self.master.destroy()
 
 
