@@ -1,5 +1,7 @@
+# Ameen Ahmed
+# github.com/Ameen-Ahmed/SongSearch
+
 from tkinter import *
-from tkinter import ttk
 
 
 class Link:

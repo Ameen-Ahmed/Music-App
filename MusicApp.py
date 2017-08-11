@@ -1,5 +1,5 @@
 # Ameen Ahmed
-# Started 7/13/17
+# github.com/Ameen-Ahmed/SongSearch
 
 from tkinter import *
 from tkinter import ttk
@@ -11,7 +11,7 @@ import os
 import string
 
 
-class MusicApp():
+class MusicApp:
     def __init__(self, master):
         self.master = master
         self.createGUI()
